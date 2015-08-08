@@ -47,13 +47,6 @@ def get_free_space(path):
     return int(os.popen("df -B 1 | grep `mount | grep " + path + " | awk '{print $1}'`" + " | awk '{print $4}'").read().replace("\n", ""))
 
 #==============================================================================
-# Function:    get_file_size
-# Description: Returns the # of bytes of a given file name.
-#==============================================================================
-def get_file_size(filename):
-    return int(os.popen("ls -l \"" + filename + "\" | awk '{print $5}'").read().replace("\n", ""))
-
-#==============================================================================
 # Function:    main
 # Description: Main routine. 
 #==============================================================================
@@ -124,7 +117,7 @@ def main():
                 os.mkdir(artist_dir)
 
             # see if it will fit on the player and copy it if so
-            if (free_space > get_file_size(file_list[index])):
+            if (free_space > os.path.getsize(file_list[index])):
                 shutil.copyfile(file_list[index], artist_dir + "/{}.mp3".format(clean(m.tags["title"][0])))
 
         except ValueError, e:
