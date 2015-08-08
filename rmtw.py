@@ -33,6 +33,21 @@ def clean(string):
     return re.sub('[^\w\-_\. ]', '_', string)
 
 #==============================================================================
+# Function:    
+# Description: 
+#==============================================================================
+def touch(fname, times=None):
+
+    # Assume fname is a file
+    try:
+        with open(fname, 'a'):
+            os.utime(fname, times)
+
+    # fname is a directory, not a file
+    except IOError:
+        os.utime(fname, times)
+
+#==============================================================================
 # Function:    player_is_mounted
 # Description: Returns whether or not dest_path is mounted.
 #==============================================================================
@@ -136,6 +151,12 @@ def main():
             file_list[index] = file_list.pop(len(file_list) - 1)
         else:
             file_list.pop(len(file_list) - 1)
+
+    # Lastly, touch each folder in alphabetical order to correct my stupid MP3 player sorting order
+    l = os.listdir(dest_path)
+    l.sort()
+    for d in l:
+        touch(os.path.join(dest_path, d)
 
 if __name__ == '__main__':
     main()
