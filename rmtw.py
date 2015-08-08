@@ -1,12 +1,36 @@
 #!/usr/bin/python2
 # -*- coding: utf-8 -*-
 
-import sys, os, random
+import sys, os, random, shutil, re
 from mutagen.mp3 import MP3
 from mutagen.easyid3 import EasyID3
 import mutagen.id3
 from optparse import OptionParser
 from mutagen.mp3 import HeaderNotFoundError
+
+#==============================================================================
+# Function:    
+# Description: 
+#==============================================================================
+def clear_directory(path):
+    for the_file in os.listdir(path):
+        file_path = os.path.join(path, the_file)
+
+        try:
+            if os.path.isfile(file_path):
+                os.unlink(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
+
+        except Exception, e:
+            print e
+
+#==============================================================================
+# Function:    
+# Description: 
+#==============================================================================
+def clean(string):
+    return re.sub('[^\w\-_\. ]', '_', string)
 
 #==============================================================================
 # Function:    player_is_mounted
@@ -68,8 +92,7 @@ def main():
         sys.exit()
 
     print '  Removing current playlist...'
-    os.popen('find ' + dest_path + ' -iname "*.mp3" -exec rm {} \;')
-    os.popen('mkdir -p ' + dest_path)
+    clear_directory(dest_path)
 
     print '  Creating file list...'
     file_list = os.popen('find -L "' + src_path + '" -type f -iname "*.mp3"').read().split('\n')[0:-1]
@@ -86,30 +109,34 @@ def main():
         # choose a random file number
         index = random.randint(0, len(file_list) - 1)
 
-        # print information about the file being transferred
-        # missing tags are replaced by 'unknown'
         try:
+
+            # print information about the file being transferred
+            # missing tags are replaced by 'unknown'
             m = MP3(file_list[index], ID3=EasyID3)
-            try:
-                print '  ' + m.tags['artist'][0] + ' - ' + m.tags['title'][0]
-            except ValueError:
-                try:
-                    print '  ' + m.tags['artist'][0] + ' - Unknown'
-                except ValueError:
-                    try:
-                        print '  Unknown - ' + m.tags['title'][0]
-                    except ValueError:
-                        print '  Unknown - Unknown'
-            del(m)
-        except:
-            print '  Problem:', file_list[index]
 
-        # quotes in the file name will F everything up
-        file_list[index].replace('"', '\\"')
+            # Only copy the song if the artist and title tags are set
+            print '  ' + m.tags['artist'][0] + ' - ' + m.tags['title'][0]
 
-        # see if it will fit on the player and copy it if so
-        if (free_space > get_file_size(file_list[index])):
-            os.popen('cp "' + file_list[index] + '" ' + dest_path)
+            # Create artist folder if it doesn't exist
+            artist_dir = os.path.join(dest_path, clean(m.tags['artist'][0]))
+            if not os.path.exists(artist_dir):
+                os.mkdir(artist_dir)
+
+            # see if it will fit on the player and copy it if so
+            if (free_space > get_file_size(file_list[index])):
+                shutil.copyfile(file_list[index], artist_dir + "/{}.mp3".format(clean(m.tags["title"][0])))
+
+        except ValueError, e:
+            print "ValueError: {}".format(e)
+
+        except KeyError, e:
+            print "KeyError: {}".format(e)
+
+        except TypeError, e:
+            print "TypeError: {}".format(e)
+
+        del(m)
 
         # Put the last file in our list where the one we just copied was if it's the last file, we'll just toss it
         if (index != len(file_list) - 1):
