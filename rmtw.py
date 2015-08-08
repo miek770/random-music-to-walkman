@@ -121,13 +121,13 @@ def main():
                 shutil.copyfile(file_list[index], artist_dir + "/{}.mp3".format(clean(m.tags["title"][0])))
 
         except ValueError, e:
-            print "ValueError: {}".format(e)
+            print "! ValueError: {} - {}".format(e, file_list[index])
 
         except KeyError, e:
-            print "KeyError: {}".format(e)
+            print "! KeyError: {} - {}".format(e, file_list[index])
 
         except TypeError, e:
-            print "TypeError: {}".format(e)
+            print "! TypeError: {} - {}".format(e, file_list[index])
 
         del(m)
 
