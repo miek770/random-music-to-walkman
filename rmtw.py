@@ -9,15 +9,17 @@ from optparse import OptionParser
 from mutagen.mp3 import HeaderNotFoundError
 
 #==============================================================================
-# Function:    
-# Description: 
+# Function:    clean(string)
+# Description: Returns the string free of trailing whitespaces an non-ascii
+#              characters (the latter are replaced by underscores).
 #==============================================================================
 def clean(string):
     return re.sub('[^\w\-_\. ]', '_', string).rstrip()
 
 #==============================================================================
-# Function:    
-# Description: 
+# Function:    touch(fname, times=None)
+# Description: Updates a file or directory's access and modification times
+#              (atime and mtime). Sadly ctime can't be modified as easily.
 #==============================================================================
 def touch(fname, times=None):
 
@@ -31,8 +33,8 @@ def touch(fname, times=None):
         os.utime(fname, times)
 
 #==============================================================================
-# Function:    get_free_space
-# Description: Returns the # of bytes avail on the player.
+# Function:    get_free_space(path)
+# Description: Returns the # of bytes available on the player.
 #==============================================================================
 def get_free_space(path):
     return int(os.popen("df -B 1 | grep `mount | grep " + path + " | awk '{print $1}'`" + " | awk '{print $4}'").read().replace("\n", ""))
@@ -57,7 +59,7 @@ class Player:
 
         print 'Random music to walkman'
         print '  Looking for the mp3 player...'
-        if (not self.player_is_mounted()):
+        if (not self.is_mounted()):
             print 'Your mp3 player needs to be mounted on ' + self.dest_path + ' before you can write to it.'
             sys.exit()
 
@@ -158,7 +160,7 @@ class Player:
 
     # Returns whether or not the player is mounted
     #==============================================
-    def player_is_mounted(self):
+    def is_mounted(self):
         return (os.popen("mount | awk '{print $3}' | grep " + self.dest_path).read().replace("\n", "") == self.dest_path)
 
     # Erases all subdirectories on the player
