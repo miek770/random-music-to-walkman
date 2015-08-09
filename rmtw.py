@@ -61,6 +61,16 @@ class Player:
             print 'Your mp3 player needs to be mounted on ' + self.dest_path + ' before you can write to it.'
             sys.exit()
 
+    # Generate mp3 list from source path
+    #====================================
+    def get_mp3_list(self):
+        l = list()
+        for root, dirs, files in os.walk(self.src_path):
+            for f in files:
+                if f.endswith(".mp3"):
+                    l.append(os.path.join(root, f))
+        return l
+
     # Fill the player
     #=================
     def fill(self):
@@ -70,7 +80,7 @@ class Player:
         self.free_space = self.total_size
 
         print '  Creating file list...'
-        self.file_list = os.popen('find -L "' + self.src_path + '" -type f -iname "*.mp3"').read().split('\n')[0:-1]
+        self.file_list = self.get_mp3_list()
 
         # loop until there are no more files to copy if the device gets close to full we will stop too
         while (len(self.file_list) > 0):
