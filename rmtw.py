@@ -193,7 +193,7 @@ def main():
     # Arguments handling
     (options, args) = parser.parse_args()
     if len(args) != 2:
-        print 'You have to specify a source (where your music files are stored) and a destination.'
+        parser.print_help()
         sys.exit()
 
     p = Player(src_path=os.path.join(args[0]),
