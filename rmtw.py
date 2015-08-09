@@ -33,13 +33,6 @@ def touch(fname, times=None):
         os.utime(fname, times)
 
 #==============================================================================
-# Function:    get_free_space(path)
-# Description: Returns the # of bytes available on the player.
-#==============================================================================
-def get_free_space(path):
-    return int(os.popen("df -B 1 | grep `mount | grep " + path + " | awk '{print $1}'`" + " | awk '{print $4}'").read().replace("\n", ""))
-
-#==============================================================================
 # Class:       Player 
 # Description: MP3 player (or USB key)
 #==============================================================================
@@ -51,7 +44,7 @@ class Player:
         self.src_path = src_path
         self.dest_path = dest_path
         self.threshold = threshold
-        self.total_size = get_free_space(self.dest_path)
+        self.total_size = self.get_free_space()
         self.free_space = self.total_size
 
         self.file_list = None
@@ -73,12 +66,17 @@ class Player:
                     l.append(os.path.join(root, f))
         return l
 
+    # Returns the # of bytes available on the player
+    #================================================
+    def get_free_space(self):
+        return int(os.popen("df -B 1 | grep {} | awk '{{print $4}}'".format(self.dest_path)).read().replace("\n", ""))
+
     # Fill the player
     #=================
     def fill(self):
         print '  Removing current playlist...'
         self.clear_directory()
-        self.total_size = get_free_space(self.dest_path)
+        self.total_size = self.get_free_space()
         self.free_space = self.total_size
 
         print '  Creating file list...'
@@ -143,7 +141,7 @@ class Player:
 
             for i in self.final_list:
 
-                sys.stdout.write("\r%d%%" % int(synced/self.total_size))
+                sys.stdout.write("\r%d%%" % int(100*synced/self.total_size))
                 sys.stdout.flush()
 
                 # Create artist folder if it doesn't exist
