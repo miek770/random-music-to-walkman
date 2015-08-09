@@ -38,8 +38,8 @@ def touch(fname, times=None):
 #==============================================================================
 class Player:
 
-    # Init
-    #======
+    # Initialization
+    #================
     def __init__(self, src_path, dest_path, threshold):
         self.src_path = src_path
         self.dest_path = dest_path
@@ -177,7 +177,7 @@ class Player:
                 print e
 
 #==============================================================================
-# Function:    main
+# Function:    main()
 # Description: Main routine. 
 #==============================================================================
 def main():
