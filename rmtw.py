@@ -122,12 +122,13 @@ class Player:
 
             del(m)
 
-            # Put the last file in our list where the one we just copied was if it's the last file, we'll just toss it
-            # Not really sure anymore what's the point of this function. Might be removed in the near future...
             if (index != len(self.file_list) - 1):
+                # Put the last file in our list where the one we just copied was
+                # Since the last file is being popped, the
                 self.file_list[index] = self.file_list.pop(len(self.file_list) - 1)
             else:
-                self.file_list.pop(len(self.file_list) - 1)
+                 # if it's the last file, we'll just toss it
+                 self.file_list.pop(len(self.file_list) - 1)
 
         self.sync()
 
