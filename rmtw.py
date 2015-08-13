@@ -69,7 +69,7 @@ class Player:
     # Returns the # of bytes available on the player
     #================================================
     def get_free_space(self):
-        return int(os.popen("df -B 1 | grep {} | awk '{{print $4}}'".format(self.dest_path)).read().replace("\n", ""))
+        return int(os.popen("df -B 1 | grep {} | awk '{{print $4}}'".format(self.dest_path.rstrip("/"))).read().replace("\n", ""))
 
     # Fill the player
     #=================
@@ -160,7 +160,7 @@ class Player:
     # Returns whether or not the player is mounted
     #==============================================
     def is_mounted(self):
-        return (os.popen("mount | awk '{print $3}' | grep " + self.dest_path).read().replace("\n", "") == self.dest_path)
+        return (os.popen("mount | awk '{print $3}' | grep " + self.dest_path.rstrip("/")).read().replace("\n", "") == self.dest_path.rstrip("/"))
 
     # Erases all subdirectories on the player
     #=========================================
