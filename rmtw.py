@@ -105,7 +105,13 @@ class Player:
                 # see if it will fit on the player and copy it if so
                 fsize = os.path.getsize(self.file_list[index])
                 if (self.free_space > fsize):
-                    self.final_list.append((m.tags['artist'][0], m.tags['title'][0], self.file_list[index], fsize))
+
+                    # If there's a featured artist, get rid of it (really don't care, creates a bunch of folders for the same artist)
+                    artist = m.tags['artist'][0]
+                    if "feat." in artist:
+                        artist = artist.split(" feat.")[0]
+                    
+                    self.final_list.append((artist, m.tags['title'][0], self.file_list[index], fsize))
                     self.free_space -= fsize
 
             except AttributeError, e:
